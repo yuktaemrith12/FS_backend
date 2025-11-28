@@ -1,41 +1,45 @@
 // ---------------- routes/search.js ---------------------------
 // This file handles the search functionality for lessons.
-// It allows users to search lessons by topic, location, price, or available spaces.
 
 import express from "express";
 import { lessonsCol } from "../db.js"; // function to access the "lesson" collection
 
-const router = express.Router(); // create a router object for search routes
+const router = express.Router(); // create a router
+
 
 // --------------------
 // GET /search?q=term
 // --------------------
-// This route performs a full-text style search across multiple fields.
-// The frontend sends a query string (e.g., /search?q=math)
-// and the backend returns all lessons matching that term.
+
+// The frontend sends a query string (e.g., /search?q=math) 
+// Backend returns all lessons matching that term.
 router.get("/", async (req, res) => {
-  // Get the search term from the query string and remove extra spaces
+
+  // Read and clean the search query (q)
   const q = (req.query.q || "").trim();
 
-  // If no search term is provided, return an empty array
+  // If no search term => return an empty array
   if (!q) return res.json([]);
 
-  // Escape special regex characters to prevent regex injection
+  // Escape special regex characters with special meaning to make it a safer query
   const safe = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
   // Create a case-insensitive regular expression for matching text
   const regex = new RegExp(safe, "i");
 
-  // MongoDB aggregation pipeline:
-  // Step 1: Convert price and space to strings (so they can be searched like text)
-  // Step 2: Match documents where topic, location, price, or space matches the regex
+
+  // MongoDB aggregation pipeline
+
   const pipeline = [
+      // Step 1: Convert price and space to strings (so they can be searched like text)
     { 
       $addFields: { 
         priceStr: { $toString: "$price" }, 
         spaceStr: { $toString: "$space" } 
       } 
     },
+
+      // Step 2: Match documents where fields matches the regex
     { 
       $match: { 
         $or: [

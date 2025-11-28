@@ -3,21 +3,21 @@
 // It lets the frontend send a new order to be saved in the MongoDB "order" collection.
 
 import express from "express";
-import { ordersCol } from "../db.js"; // function to access the "order" collection
+import { ordersCol } from "../db.js";  
 
-const router = express.Router(); // create an Express router for order routes
+const router = express.Router();  
 
 // --------------------
 // POST /orders
 // --------------------
 // This route is called when the user completes checkout.
-// It receives the order details from the frontend (name, phone, lesson IDs, spaces)
-// and saves a new document in the "order" collection in MongoDB.
+
 router.post("/", async (req, res) => {
+
   // Extract data from the request body
   const { name, phone, lessonIDs, space } = req.body || {};
 
-  // Basic validation – makes sure required fields are provided
+  // Validation – check if required fields are provided
   if (
     !name || !phone ||
     !Array.isArray(lessonIDs) ||
@@ -26,11 +26,11 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ error: "Invalid order payload" });
   }
 
+  // Create a new order document
   try {
-    // Create a new order document
     const doc = {
-      name: String(name).trim(),         // customer's name
-      phone: String(phone).trim(),       // customer's phone number
+      name: String(name).trim(),         // name
+      phone: String(phone).trim(),       //  phone number
       lessonIDs: lessonIDs.map(String),  // list of lesson IDs being booked
       space,                             // number of spaces booked
       createdAt: new Date()              // timestamp of order creation
@@ -43,8 +43,8 @@ router.post("/", async (req, res) => {
     res.status(201).json({ _id: result.insertedId, ...doc });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: "Failed to save order" }); // error if DB insert fails
+    res.status(500).json({ error: "Failed to save order" }); 
   }
 });
 
-export default router; // export router so it can be used in server.js
+export default router; // export router for server.js

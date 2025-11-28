@@ -3,20 +3,20 @@
 // ------------------------------------------------------
 
 
-// Import the MongoDB client to enable database connectivity
+// Import the MongoDB client 
 import { MongoClient } from "mongodb";
 
-// Import and configure dotenv to load environment variables from the .env file
+// Import to load environment variables from the .env file
 import dotenv from "dotenv";
 dotenv.config();
 
-// Create a new MongoDB client instance using the connection string from the environment variables
+// Create a new MongoDB client instance  
 const client = new MongoClient(process.env.MONGODB_URI);
 
+
 // --------------------- getDb() -------------------------
-// Establishes a connection to the MongoDB Atlas + Returns the database instance for use across the application.
+//  Connects to MongoDB Atlas and returns the database instance.
 //
-// Logic:
 //  * - Checks if a client connection already exists or has been destroyed.
 //  * - If not connected, it initiates a new connection to MongoDB Atlas.
 //  * - Uses the DB_NAME from the environment variables or defaults to 'fs_coursework'.
